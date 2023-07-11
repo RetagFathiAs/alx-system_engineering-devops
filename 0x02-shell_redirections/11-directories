@@ -1,2 +1,2 @@
 #!/bin/bash
-find . -type -not -name | cw -l
+find . -type d -not -name "." | wc -l
