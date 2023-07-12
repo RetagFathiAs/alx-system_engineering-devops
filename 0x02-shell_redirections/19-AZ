@@ -1,2 +1,2 @@
 #!/bin/bash
-ls -la
+tr "A" "Z" | tr "c" "e" 
