@@ -1,6 +1,9 @@
-0x09. Web infrastructure design
+## ALX Project
+## 0x09. Web infrastructure design
 
-Task 2:
+## Task 2:
+
+![Image of a simple web stack](2-secured_and_monitored_web_infrastructure.png)
 
 What are firewalls for?
 They allow or block traffic based on a defined set of security rules, and protect against unauthorized access, malware and other security threats.
