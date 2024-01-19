@@ -1,5 +1,5 @@
 # execute command
-exec { 'killmenow':
+exec { 'pkill':
   path    => '/user/bin/bash',
   command => 'pkill -e killmenow'
   }
