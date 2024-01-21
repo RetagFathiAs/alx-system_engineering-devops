@@ -1,1 +1,5 @@
-# ppppppppppppppppppp
+# Client configuration file
+Host *
+Host 34.229.137.159
+PasswordAuthentication no
+IdentityFile ~/.ssh/school
