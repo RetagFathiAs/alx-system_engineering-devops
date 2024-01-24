@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Script that configures a new Ubuntu machine to respect above requirements
+# A script that installs nginx server on an ubuntu linux distro.
 
-apt-get update
-apt-get install -y nginx
+sudo apt-get update -y
 
-echo "Holberton School" | sudo tee /var/www/html/index.html
+sudo apt-get install nginx -y
+
+echo 'Hello World!' > /var/www/html/index.html
 
 service nginx restart
