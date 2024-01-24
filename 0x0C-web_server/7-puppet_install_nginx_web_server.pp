@@ -1,4 +1,4 @@
-# Script to install nginx using puppet
+# Script puppet
 
 package {'nginx':
   ensure => 'present',
@@ -9,8 +9,8 @@ exec {'install':
   provider => shell,
 }
 
-exec {'Holberton':
-  command  => 'echo "Holberton School" | sudo tee /var/www/html/index.html',
+exec {'Hello World!':
+  command  => 'echo "Hello World!" | sudo dd status=none of=/var/www/html/index.html',
   provider => shell,
 }
 
