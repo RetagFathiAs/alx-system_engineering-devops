@@ -1,1 +1,1 @@
-Project 0-strace_is_your_friend.pp
+0-strace_is_your_friend.pp
