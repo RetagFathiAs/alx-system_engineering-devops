@@ -1,45 +1,37 @@
-Postmortem Report
+Postmortem: Web Stack Outage
 
-<p align="center">
-<img src="https://raw.githubusercontent.com/OliyadKebede/alx-system_engineering-devops/main/0x19-postmortem/report_cover_picture.PNG" width=100% height=100% />
-</p>
+Impact: The web application was completely unavailable during the outage, resulting in a significant disruption of service for all users. Approximately 90% of the users were affected, experiencing error messages and inability to access the platform.
 
-# GitHub services were affected on October 22  post-incident analysis
+Root Cause: A database connection leak due to a misconfigured connection pool.
 
-### Summary
+- The issue was detected when monitoring alerts indicated a sudden drop in server response times.
+- An engineer noticed the slow response times and began investigating the issue.
+- The investigation initially focused on the application servers, assuming a software bug might be causing the slowdown.
+- Several misleading paths were taken, including checking for network congestion and exploring potential DDoS attacks.
+- After several hours of unsuccessful debugging, the incident was escalated to the DevOps team for further analysis.
+- The DevOps team identified a possible database-related issue and engaged the database administrators (DBAs) for assistance.
+- The DBAs discovered a misconfigured connection pool, which was causing a leak of database connections.
+- March 6, 2024, 2:00 AM (UTC): The incident was resolved, and the web application was fully restored.
 
-GitHub had a problem last week that caused the service to be down for 24 hours and 11 minutes. While certain parts of our platform were not impacted by this incident,
-several internal systems were, which led to the display of outdated and conflicting information. No user data was ultimately lost, however manual reconciliation for a
-brief period of database writes is still ongoing. Additionally, throughout the majority of the incident, GitHub was unable to create and publish GitHub Pages sites or
-provide webhook events.
+Root Cause and Resolution:
+The root cause of the outage was identified as a misconfigured connection pool. The connection pool settings were not properly tuned, causing an excessive number of connections to be created and not released, leading to a resource exhaustion issue. As a result, the database server was unable to handle the incoming requests, leading to degraded performance and eventually a complete outage.
 
+To resolve the issue, the DBAs reconfigured the connection pool settings to ensure proper connection reuse and release. Additionally, they performed a thorough cleanup of the leaked connections and optimized the database server to handle the increased load more efficiently. These changes were implemented incrementally to minimize disruption, and the web application was gradually restored to normal operation.
 
-## Incident Timeline
-**2018 October 21 22:52 UTC** - Because the database clusters in the US East and West Coast data centers now contained writes that were not present in the other data center, we were unable to fail the primary back over to the US East Coast data center safely.
+Corrective and Preventative Measures:
+To prevent similar incidents in the future, the following measures will be implemented:
+1. Regular connection pool health checks: Implement automated monitoring and alerting to detect abnormal connection pool behavior, such as leaks or depletion.
+2. Load testing and capacity planning: Perform regular load tests to identify performance bottlenecks and capacity limitations, ensuring adequate resources are allocated to handle peak traffic.
+3. Improved debugging and incident response process: Enhance the incident response playbook to include troubleshooting steps specific to database-related issues, reducing the time to identify root causes.
+4. Continuous configuration management: Establish a configuration management process to ensure consistent and accurate configuration of critical components, including connection pools and database servers.
+5. Enhanced monitoring and logging: Implement comprehensive monitoring and logging mechanisms to capture and analyze system metrics, database performance, and application logs for better visibility into the system's health and behavior.
+6. Regular security reviews: Conduct periodic security audits and reviews to identify potential vulnerabilities and ensure robust security measures are in place to protect against attacks.
 
-**2018 October 21 22:54 UTC** - By this point the responding team decided to manually lock our internal deployment tooling to prevent any additional changes from being introduced.
-**2018 October 21 23:13 UTC** - It was understood at this time that the problem affected multiple database clusters.
+Tasks to Address the Issue:
+- Review and update connection pool configuration settings.
+- Conduct a post-incident review with the engineering, DevOps, and DBA teams to share lessons learned and improve collaboration.
+- Enhance monitoring and alerting capabilities to proactively detect and respond to similar issues.
+- Develop and document a standardized debugging process for database-related incidents.
+- Implement load testing and capacity planning procedures to ensure the system can handle expected traffic loads.
 
-**2018 October 21 23:19 UTC** - We made an explicit choice to partially degrade site usability by pausing webhook delivery and GitHub Pages builds instead of jeopardizing data we had already received from users.
-
-**2018 October 22 00:41 UTC** - A backup process for all affected MySQL clusters had been initiated by this time and engineers were monitoring progress.
-
-**2018 October 22 06:51 UTC** -Our teams had identified ways to restore directly from the West Coast to overcome throughput restrictions caused by downloading from off-site storage and were increasingly confident that restoration was imminent, and the time left to establishing a healthy replication topology was dependent on how long it would take replication to catch up.
-
-**2018 October 22 07:46 UTC** - We intended to send this communication out much sooner and will be ensuring we can publish updates in the future under these constraints
-
-### Root Cause and Resolution
- During our recovery, we captured the MySQL binary logs containing the writes we took in our primary site that were not replicated to our West Coast site from
-each affected cluster. The total number of writes that were not replicated to the West Coast was relatively small. For example, one of our busiest clusters had
-954 writes in the affected window. We are currently performing an analysis on these logs and determining which writes can be automatically reconciled and which will
-require outreach to users.
-
-### Corrective and Preventive Measures
-- Adjust the configuration of Orchestrator to prevent the promotion of database primaries across regional boundaries.
-- While many portions of GitHub were available throughout the incident, we were only able to set our status to green, yellow, and red.
-- tolerate the full failure of a single data center failure without user impact.
-- We will take a more proactive stance in testing our assumptions.
-
-### Conclusion
-We know how much you rely on GitHub for your projects and businesses to succeed. No one is more passionate about the availability of our services and the 
-correctness of your data. We will continue to analyze this event for opportunities to serve you better and earn the trust you place in us.
+By implementing these corrective and preventative measures, we aim to strengthen the stability and reliability of our web stack, minimizing the risk of future outages and providing a seamless user experience.
