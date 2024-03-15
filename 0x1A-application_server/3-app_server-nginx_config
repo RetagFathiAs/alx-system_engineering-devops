@@ -10,9 +10,7 @@ server {
                 location / {
                     try_files $uri $uri/ =404;
                 }
-                location /redirect_me {
-                    rewrite ^ https://youtube.com/watch?v=QH2-TGUlwu4 permanent;
-                }
+                
 		location /hbnb_static/ {
 		    alias /data/web_static/current;
 		    index index.html;
